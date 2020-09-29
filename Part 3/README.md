@@ -1,38 +1,6 @@
 # Aavail AI Workflow – Capstone Project
 AI in Production Coursera course
 
-## Part 1: Data ingestion
-In order to help stabilise staffing and budget projections, Aavail has asked us to build a service capable of projecting their revenues accross different countries using historical service purchases. To achieve this, we will use time series forecasting and fit different models on this historical data, using them to predict future observations.
-
-Ideally, to achieve our objective, the transactional data should consist of features that contain information on the transaction date, location as well as a target variable that will reflect the generated revenue by each transaction (e.g. the price paid by the customer). If available, additional information on the customer and the service being purchased may be useful to refine our analysis and feed more information into our predictive models, in hopes of increasing the predictive accuracy and understanding of underlying patterns.
-
-After ingesting the input data available in JSON files, the different columns needed to be uniformly formated. We then used a date range to ensure all days were accounted for in the data and extracted the top 10 countries with regards to the generated revenue. 
-
-From this point we could start our **exploratory data analysis** (EDA). Among other things, we looked at the relationship between the target (i.e. the revenue) and the other features. The monthly revenue combined across all top 10 countries is depicted below as we were looking for potential trends or seasonal peaks in the data, where consumers would purchase or stream more. We noticed possible dips between summer and winter seasons while the revenue peaked in December 2019 – but the amount of data was insufficient to draw any significant conclusion on seasonal patterns.
-![Monthly Revenues](https://github.com/N-otna/aavail-ai-workflow-capstone/blob/master/Part%201/monthly_revenue_top10.png)
-
-Additionally, we compared the **performance between the top 10 countries** with regards to the overall views, the revenue and the number of streams, with the United Kingdom standing out and accounting for the largest proportion of all three metrics (over 90%) while Hong Kong and the Netherlands were the least performing.
-
-![Top 10 countries performances](https://github.com/N-otna/aavail-ai-workflow-capstone/blob/master/Part%201/top_countries_metrics.png)
-
-Additional graphs depicting the **relationship between the different variables** as well as the EDA script can be found in [Part 1](https://github.com/N-otna/aavail-ai-workflow-capstone/tree/master/Part%201) of this repository. The data ingestion has been fully automated and exists as a script with functions in the `cslib.py` file.
-
-## Part 2: Modelling
-For the time series forecasting, we implemented two prediction that combine the output of multiple decision trees: a **Random Forest** and an **XGBoost regressor**. 
-
-To provide inputs that our machine learning models could use to capture the underlying patterns or trends in the the data, we **engineered the features** so that for any given day the target becomes the sum of the next days revenue. We aggregate the transactions by day and use windows in time back from a specific date. Finally, we also add some features not directly related to the revenue, such as the 'recent views' and the 'recent invoices'. The extent of our feature engineering can be seen in the `cslib.py` script in the [Part 2](https://github.com/N-otna/aavail-ai-workflow-capstone/tree/master/Part%202) folder. We end up with a total of **7 explanatory variables** (i.e. features) to feed our models:
-> previous_7, previous_14, previous_28, previous_70, previous_year, recent_invoices and recent_views
-
-while the **30-day revenue** remains our target variable.
-
-In the modelling phase, for both the Random Forest and the XGBoost, we used a pipeline architecture with a standard scaler transformation for both, such that our input data distribution will have a mean value 0 and standard deviation of 1. We split the data into train and test subsets first. Then, for **hyperparameter tuning**, we used a [grid search](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV) with 5-fold cross validation to exhaustively consider all parameter combinations. For the XGBoost, on the other hand, we implemented an alternative way of tuning hyperparameters, namely a [randomised search](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html#sklearn.model_selection.RandomizedSearchCV). In contrast to the grid search, this method tries out a fixed number of parameter settings sampled form specified distributions which greatly increases the efficiency and reduces our training time.
-
-After engineering the features and shaping the pipeline architecture as well as the parameter tuning, we retrain both models on all of the available data and compared their performances. Looking at the prediction errors, the Random Forest performed better with a narrower distribution around 0.
-![Prediction errors](https://github.com/N-otna/aavail-ai-workflow-capstone/blob/master/Part%202/error_hist.png)
-
-In terms of Root Mean Square Error (RMSE), we can also see that the Random Forest performed better as it generated a lower RMSE on its predictions.
-![RMSE](https://github.com/N-otna/aavail-ai-workflow-capstone/blob/master/Part%202/rmse.png)
-
 ## Part 3: Model deployment
 In this final part, we embed and deploy both our prediction models into a Flask app framework and build an API with **training**, **prediction** and **logging** endpoints. The app also has a dashboard for model performance and data drift monitoring. All the app components can be found in the [aavail-app](https://github.com/N-otna/aavail-ai-workflow-capstone/tree/master/Part%203/aavail-app) subfolder of Part 3.
 
