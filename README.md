@@ -28,9 +28,11 @@ while the **30-day revenue** remains our target variable.
 In the modelling phase, for both the Random Forest and the XGBoost, we used a pipeline architecture with a standard scaler transformation for both, such that our input data distribution will have a mean value 0 and standard deviation of 1. We split the data into train and test subsets first. Then, for **hyperparameter tuning**, we used a [grid search](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV) with 5-fold cross validation to exhaustively consider all parameter combinations. For the XGBoost, on the other hand, we implemented an alternative way of tuning hyperparameters, namely a [randomised search](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html#sklearn.model_selection.RandomizedSearchCV). In contrast to the grid search, this method tries out a fixed number of parameter settings sampled form specified distributions which greatly increases the efficiency and reduces our training time.
 
 After engineering the features and shaping the pipeline architecture as well as the parameter tuning, we retrain both models on all of the available data and compared their performances. Looking at the prediction errors, the Random Forest performed better with a narrower distribution around 0.
+
 ![Prediction errors](https://github.com/N-otna/aavail-ai-workflow-capstone/blob/master/Part%202/error_hist.png)
 
 In terms of Root Mean Square Error (RMSE), we can also see that the Random Forest performed better as it generated a lower RMSE on its predictions.
+
 ![RMSE](https://github.com/N-otna/aavail-ai-workflow-capstone/blob/master/Part%202/rmse.png)
 
 ## Part 3: Model deployment
@@ -113,5 +115,6 @@ To run **all three unit tests at once** please run the `run-tests.py` script:
 We also set up a monitoring system to investigate the performance of our models and the quality of the incoming data, looking to determine and flag some potential drift. 
 
 The `monitoring.py` script will load the data used in the latest training and determine outlier and distance thresholds. The outputs can be visualised in the following form:
+
 ![Outliers](https://github.com/N-otna/aavail-ai-workflow-capstone/blob/master/Part%203/monitoring_outliers.png)
 
